@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Cards - by Devin Gray</title>
+      <script src="mathlib-min.js"></script>
+      <script>
+window.addEventListener('load', onloadHandler, false);
+
+//card defines
+var ACE = 1;
+var TWO = 2;
+var THREE = 3;
+var FOUR = 4;
+var FIVE = 5;
+var SIX = 6;
+var SEVEN = 7;
+var EIGHT = 8;
+var NINE = 9;
+var TEN = 10;
+var JACK = 11;
+var QUEEN = 12;
+var KING = 13;
+
+//suites
+var SPADES = 1;
+var DIAMONDS = 2;
+var CLUBS = 3;
+var HEARTS = 4;
+
+//https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
+//http://www.2ality.com/2013/09/javascript-unicode.html
+//http://www.fileformat.info/info/unicode/char/1f0a1/index.htm
+
+//colors
+var WHITE = "rgb(255,255,255)";
+var YELLOW = "rgb(238,172,78)";
+var BLUE = "rgb(0, 0, 153)";
+var RED = "rgb(255,0,0)";
+var PURPLE = "rgb(102, 0, 204)";
+var ORANGE = "rgb(255, 102, 0)";
+var GREEN = "rgb(0, 102, 0)";
+var MAROON = "rgb(128, 0, 0)";
+var BLACK = "rgb(0,0,0)";
+var BROWN = "rgb(80, 33, 4)";
+var GHOST_WHITE = "rgba(255,255,255, 0.3)";
+var BUMPER_FELT_GREEN = "rgb(21, 70, 13)";
+
+var X_MAX = 1120; 
+var Y_MAX = 640; 
+
+function toUTF16(codePoint) {
+    var TEN_BITS = parseInt('1111111111', 2);
+    function u(codeUnit) {
+        return '\\u'+codeUnit.toString(16).toUpperCase();
+    }
+
+    if (codePoint <= 0xFFFF) {
+        return u(codePoint);
+    }
+    codePoint -= 0x10000;
+
+    // Shift right to get to most significant 10 bits
+    var leadSurrogate = 0xD800 + (codePoint >> 10);
+
+    // Mask to get least significant 10 bits
+    var tailSurrogate = 0xDC00 + (codePoint & TEN_BITS);
+
+    return u(leadSurrogate) + u(tailSurrogate);
+}
+
+//game data structure
+var cardList;
+
+//loads after page loads - a.k.a - main()
+function onloadHandler()
+{
+   // get the canvas DOM element
+   var canvas = document.getElementById('canvas'),
+       ctx = canvas.getContext("2d"),
+       width = canvas.width,
+       height = canvas.height;
+   
+   // data structures - generate initial cards
+   cardList = new CardList();
+   cardList.cards = getDeck();
+
+   function getDeck() {
+       var x = 800;
+       var y = 320;
+
+       return [
+          new Card(ACE, SPADES, 200, y),
+       ];
+    }
+
+   function drawText(x, y, text, color)
+   {
+     ctx.fillStyle = color;
+     ctx.fillText(text, x, y);
+   };
+   
+   function drawDisc(x, y, rad, color)
+   {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, rad, 0, TWOPI, true);
+      ctx.fill();
+   };
+
+   function drawBumpers() {
+      //green bumpers
+      ctx.fillStyle = BUMPER_FELT_GREEN;
+      //top left
+      ctx.beginPath();
+      ctx.moveTo(50,10);
+      ctx.lineTo(X_MAX/2-20, 10);
+      ctx.lineTo(X_MAX/2-40, 35);
+      ctx.lineTo(75,35);
+      ctx.fill();
+      
+      //top right
+      ctx.beginPath();
+      ctx.moveTo(X_MAX/2+20, 10);
+      ctx.lineTo(X_MAX-50, 10);
+      ctx.lineTo(X_MAX-75, 35);
+      ctx.lineTo(X_MAX/2+40,35);
+      ctx.fill();
+
+      //bottom left
+      ctx.beginPath();
+      ctx.moveTo(50,Y_MAX-10);
+      ctx.lineTo(X_MAX/2-20, Y_MAX-10);
+      ctx.lineTo(X_MAX/2-40, Y_MAX-35);
+      ctx.lineTo(75,Y_MAX-35);
+      ctx.fill();
+      
+      //bottom right
+      ctx.beginPath();
+      ctx.moveTo(X_MAX/2+20, Y_MAX-10);
+      ctx.lineTo(X_MAX-50, Y_MAX-10);
+      ctx.lineTo(X_MAX-75, Y_MAX-35);
+      ctx.lineTo(X_MAX/2+40,Y_MAX-35);
+      ctx.fill();
+
+      //left
+      ctx.beginPath();
+      ctx.moveTo(20, 50);
+      ctx.lineTo(20, Y_MAX-50);
+      ctx.lineTo(35, Y_MAX-70);
+      ctx.lineTo(35,70);
+      ctx.fill();
+
+      //right
+      ctx.beginPath();
+      ctx.moveTo(X_MAX-20, 50);
+      ctx.lineTo(X_MAX-20, Y_MAX-50);
+      ctx.lineTo(X_MAX-35, Y_MAX-70);
+      ctx.lineTo(X_MAX-35,70);
+      ctx.fill();
+
+      //wooden rails
+      ctx.fillStyle = BROWN;
+
+      //top rail
+      ctx.beginPath();
+      ctx.rect(0,0,X_MAX, 20);
+      ctx.fill();
+
+      //right rail
+      ctx.beginPath();
+      ctx.rect(X_MAX-20,0,X_MAX-20, Y_MAX);
+      ctx.fill();
+
+      //bottom rail
+      ctx.beginPath();
+      ctx.rect(0,Y_MAX-20,X_MAX, Y_MAX);
+      ctx.fill();
+
+      //left rail
+      ctx.beginPath();
+      ctx.rect(0,0,20, Y_MAX);
+      ctx.fill();
+
+   }
+   
+   // event handlers
+   var mouseClick = function(e)
+   {
+      cardList.mousex = e.clientX - offsetx;
+      cardList.mousey = e.clientY - offsety;
+   };
+   //canvas.addEventListener("click", mouseClick, false);
+   
+   var offsetx = 0, offsety = 0;
+   
+   // init main animation loop
+   requestAnimFrame(loop);
+   function loop()
+   {
+      // compute canvas offset within parent window including page view position
+      var el = canvas;
+      offsetx = offsety = 0;
+      do
+      {
+         offsetx += el.offsetLeft;
+         offsety += el.offsetTop;
+      } while (el = el.offsetParent);
+      offsetx = offsetx - window.pageXOffset;
+      offsety = offsety - window.pageYOffset;
+      
+      ctx.save();
+
+      // clear the screen
+      ctx.clearRect(0, 0, width, height);
+      
+      drawBumpers();
+      
+      // render each edge ball - which react to mouse movement
+      ctx.globalCompositeOperation = 'darker';
+      cardList.update();
+      cardList.render();
+      
+      ctx.restore();
+      
+      requestAnimFrame(loop);
+   };
+   
+   // data structures
+   function CardList()
+   {
+      this.mousex = this.mousey = 0;
+      this.cards = [];
+      
+      this.update = function()
+      {
+	 //TODO check game updates...
+      };
+      
+      this.render = function()
+      {
+         for (var i = 0; i < this.cards.length; i++)
+         {
+            ctx.save();
+            this.cards[i].render();
+            ctx.restore();
+         }
+      };
+   };
+   
+   function Card(num, suit, x, y)
+   {
+      this.num = num;
+      this.suit = suit;
+      this.origin = new Vector(x,y);
+      this.position = new Vector(x,y);
+      this.velocity = new Vector(0,0);
+      this.friction = 0.991;
+      
+      this.update = function()
+      {
+         this.velocity.x *= this.friction;
+         this.position.x += this.velocity.x;
+         
+         this.velocity.y *= this.friction;
+         this.position.y += this.velocity.y;
+      };
+      
+      this.render = function()
+      {
+         // draw the card text
+         ctx.save();
+	 var fontSize = 198;
+	 //var text = "\\U+1F0A1"
+	 //var h= '00A9';
+         var treble = toUTF16(0x1D120);
+         //var text = treble;
+         var h = 'D834';
+	 var text = String.fromCharCode(parseInt(h, 16));
+         var h2 = 'D834';
+	 var text2 = String.fromCharCode(parseInt(h2, 16));
+         var text = text + text2;
+         var text = "\uD83C\uDCA1";
+	 //var text = String.fromCharCode(parseInt(h, 16));
+         ctx.font = "Normal " + fontSize + "pt Arial";
+         drawText(this.position.x,this.position.y, text, BLACK);
+         ctx.restore();
+      };
+   };
+}
+
+// requestAnimFrame shim
+window.requestAnimFrame = (function()
+{
+   return  window.requestAnimationFrame       || 
+           window.webkitRequestAnimationFrame || 
+           window.mozRequestAnimationFrame    || 
+           window.oRequestAnimationFrame      || 
+           window.msRequestAnimationFrame     || 
+           function(callback, element)
+           {
+               window.setTimeout(callback, 1000 / 60);
+           };
+})();
+      </script>
+      <style>
+.table-container
+{
+   text-align: center;
+   margin-bottom: 1.2em;
+}
+#canvas
+{
+   border: 1px solid #aaa;
+   background: #42A931;
+   -moz-box-shadow: 3px 3px 8px #222;
+   -webkit-box-shadow: 3px 3px 8px #222;
+   box-shadow: 3px 3px 8px #222;
+}
+a, a:visited, a:active, a:hover
+{
+   color: #fff;
+   text-decoration: none;
+}
+a:hover
+{
+   text-decoration: underline;
+}
+      </style>
+   </head>
+   
+   <body style="background-color: #aaa">
+      <div class="table-container">
+         <canvas id="canvas" width="1120" height="640"></canvas>
+      </div>
+   </body>
+</html>
