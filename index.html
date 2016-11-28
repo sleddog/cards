@@ -16,17 +16,18 @@ var SIX = 6;
 var SEVEN = 7;
 var EIGHT = 8;
 var NINE = 9;
-var TEN = 10;
-var JACK = 11;
-var QUEEN = 12;
-var KING = 13;
+var TEN = 'A';
+var JACK = 'B';
+var QUEEN = 'D';
+var KING = 'E';
 
 //suites
-var SPADES = 1;
-var DIAMONDS = 2;
-var CLUBS = 3;
-var HEARTS = 4;
+var SPADES = 'A';
+var DIAMONDS = 'B';
+var CLUBS = 'C';
+var HEARTS = 'D';
 
+//notes on unicode characters for playing cards
 //https://en.wikipedia.org/wiki/Playing_cards_in_Unicode
 //http://www.2ality.com/2013/09/javascript-unicode.html
 //http://www.fileformat.info/info/unicode/char/1f0a1/index.htm
@@ -48,26 +49,6 @@ var BUMPER_FELT_GREEN = "rgb(21, 70, 13)";
 var X_MAX = 1120; 
 var Y_MAX = 640; 
 
-function toUTF16(codePoint) {
-    var TEN_BITS = parseInt('1111111111', 2);
-    function u(codeUnit) {
-        return '\\u'+codeUnit.toString(16).toUpperCase();
-    }
-
-    if (codePoint <= 0xFFFF) {
-        return u(codePoint);
-    }
-    codePoint -= 0x10000;
-
-    // Shift right to get to most significant 10 bits
-    var leadSurrogate = 0xD800 + (codePoint >> 10);
-
-    // Mask to get least significant 10 bits
-    var tailSurrogate = 0xDC00 + (codePoint & TEN_BITS);
-
-    return u(leadSurrogate) + u(tailSurrogate);
-}
-
 //game data structure
 var cardList;
 
@@ -86,10 +67,13 @@ function onloadHandler()
 
    function getDeck() {
        var x = 800;
-       var y = 320;
+       var y = 620;
 
        return [
-          new Card(ACE, SPADES, 200, y),
+          new Card(KING, SPADES, 100, y),
+          new Card(JACK, DIAMONDS, 300, y),
+          new Card(KING, CLUBS, 500, y),
+          new Card(QUEEN, HEARTS, 700, y),
        ];
     }
 
@@ -267,23 +251,40 @@ function onloadHandler()
       
       this.render = function()
       {
+	 var fontSize = 200;
+	 var xFudge = 7 *(fontSize / 100);
+	 var yFudge = 4 *(fontSize / 100);
+	 var wFudge = 21 *(fontSize / 100);
+	 var hFudge = 7 *(fontSize / 100);
+
+         // draw the background
+         ctx.fillStyle = WHITE;
+         ctx.beginPath();
+         ctx.rect(
+           this.position.x + xFudge,
+           this.position.y-fontSize + yFudge,
+           fontSize - wFudge,
+           fontSize + hFudge
+         );
+         ctx.fill();
+
          // draw the card text
          ctx.save();
-	 var fontSize = 198;
-	 //var text = "\\U+1F0A1"
-	 //var h= '00A9';
-         var treble = toUTF16(0x1D120);
-         //var text = treble;
-         var h = 'D834';
-	 var text = String.fromCharCode(parseInt(h, 16));
-         var h2 = 'D834';
-	 var text2 = String.fromCharCode(parseInt(h2, 16));
-         var text = text + text2;
-         var text = "\uD83C\uDCA1";
-	 //var text = String.fromCharCode(parseInt(h, 16));
+         var text = eval("'\\uD83C\\u" + "DC" + this.suit + this.num.toString() + "'");
          ctx.font = "Normal " + fontSize + "pt Arial";
-         drawText(this.position.x,this.position.y, text, BLACK);
+	 var color = (this.suit == CLUBS || this.suit == SPADES) ? BLACK : RED;
+         drawText(this.position.x,this.position.y, text, color);
          ctx.restore();
+
+         // draw the card text
+	 /*
+         ctx.save();
+         var text = "\u2660";
+         ctx.font = "Normal " + fontSize + "pt Arial";
+	 var color = (this.suit == CLUBS || this.suit == SPADES) ? BLACK : RED;
+         drawText(this.position.x+(11*fontSize/100),this.position.y, text, color);
+         ctx.restore();
+	 */
       };
    };
 }
