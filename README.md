@@ -4,58 +4,43 @@ The idea of this project is to build out a generic deck of cards and playing sur
 
 ## Getting Started
 
-`@TODO`
+- Clone the project to a local workspace of your choice. SSH Key method is reccomended.
+- **`SSH`**: `https://github.com/sleddog/cards.git`
+- **`HTTPS`**: `git@github.com:sleddog/cards.git`
+- :point_right:[LEARN MORE](https://help.github.com/articles/connecting-to-github-with-ssh/) about creating SSH keys in GitLab.
 
 ### Prerequisites
 
-`@TODO`
-What things you need to install the software and how to install them
+> Note: There currently are no dev or global depdencies for this project (it's just a simple HTML/JS project), so it theoretically can just be launched from a browser to view. (ex. open in browser: `/users/me/myWorkspace/cards/index.html`)
 
-```
-Give examples
-```
+However, this project has been set up with package.json template for future development. This environment includes a simple local server to be able to run the project in a simulated dev environment.
 
-### Installing
+If you decide to run the local server, the requirements are listed below. (Follow directions in #installing to lauch server)
 
-`@TODO`
-A step by step series of examples that tell you how to get a development env running
+`node`: `>=8.1.3`
+`npm`: `^5.0.3`
+`yarn`: `^1.9.4`
 
-Say what the step will be
+### Installing and Running
 
-```
-Give the example
-```
+From the root directory of the project...
+`npm install` -or- `yarn`
 
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+To serve...
+`npm run serve` then navigate to `http://localhost:5000`
 
 ## Running the tests
 
 `@TODO`
-Explain how to run the automated tests for this system
+There is currently no test suite set up
 
-### Break down into end to end tests
+### E-2-E & Unit tests
 
 `@TODO`
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ### And coding style tests
 
 `@TODO`
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ## Deployment
 
@@ -66,32 +51,24 @@ Add additional notes about how to deploy this on a live system
 
 `@TODO`
 
-- [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-- [Maven](https://maven.apache.org/) - Dependency Management
-- [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
 ## Contributing
 
-`@TODO`
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
-`@TODO`
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/sleddog/cards/releases).
 
 ## Authors
 
-`@TODO`
+- **Devin Gray** - _Initial work_ - [sleddog](devingray@gmail.com)
 
-- **Billie Thompson** - _Initial work_ - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/sleddog/cards/graphs/contributors) who participated in this project.
 
 ## License
 
 `@TODO`
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+Setup License?
 
 ## Acknowledgments
 
