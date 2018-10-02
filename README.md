@@ -67,8 +67,7 @@ See also the list of [contributors](https://github.com/sleddog/cards/graphs/cont
 
 ## License
 
-`@TODO`
-Setup License?
+This project is licensed under the MIT license. See `LICENSE` for more info.
 
 ## Acknowledgments
 
