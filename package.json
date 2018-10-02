@@ -1,0 +1,23 @@
+{
+  "name": "cards",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The idea of this project is to build out a generic deck of cards and playing surface in order to play various games (texas holdem, wild card rummy, memory match, etc...).",
+  "main": "mathlib-min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sleddog/cards.git"
+  },
+  "author": "Devin Gray <devingray@gmail.com>",
+  "contributors": [
+    "Burton Podczerwinski <burtonp@slalom.com> (https://github.com/bpod)"
+  ],
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/sleddog/cards/issues"
+  },
+  "homepage": "https://github.com/sleddog/cards#readme"
+}
